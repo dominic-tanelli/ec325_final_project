@@ -5,7 +5,12 @@
 
 # EC325 Final Project
 
-# Wind Energy (September 2021)
+# Install and Load Packages
+# install.packages(c("ggplot2", "scales"))
+library(ggplot2)
+library(scales)
+
+# Wind Energy Data (September 2021)
 sep2021 <- read.csv("/cloud/project/Sep2021_Wind_Energy.csv")
 
 # Split Wind Energy Data into 18 Regions based on HUC_12 ranges
@@ -80,3 +85,93 @@ pacific_northwest <- sep2021 %>%
 # Region 18 (California) [HUC_12 range: 180101010101 to 181002041400]
 california <- sep2021 %>%
   filter(HUC_12 >= 180101010101 & HUC_12 <= 181002041400)
+
+# Question 1: What regions within the contiguous United States exhibit the highest potential wind energy resources based on kilowatt hours per square kilometer per day?
+
+# Calculate kWh/km²/day averages for each of the 18 regions
+# Region 1: New England
+new_england_avg <- mean(new_england$kWhkm2day, na.rm = TRUE)
+
+# Region 2: Mid Atlantic
+mid_atlantic_avg <- mean(mid_atlantic$kWhkm2day, na.rm = TRUE)
+
+# Region 3: South Atlantic Gulf
+south_atlantic_gulf_avg <- mean(south_atlantic_gulf$kWhkm2day, na.rm = TRUE)
+
+# Region 4: Great Lakes
+great_lakes_avg <- mean(great_lakes$kWhkm2day, na.rm = TRUE)
+
+# Region 5: Ohio
+ohio_avg <- mean(ohio$kWhkm2day, na.rm = TRUE)
+
+# Region 6: Tennessee
+tennessee_avg <- mean(tennessee$kWhkm2day, na.rm = TRUE)
+
+# Region 7: Upper Mississippi
+upper_mississippi_avg <- mean(upper_mississippi$kWhkm2day, na.rm = TRUE)
+
+# Region 8: Lower Mississippi
+lower_mississippi_avg <- mean(lower_mississippi$kWhkm2day, na.rm = TRUE)
+
+# Region 9: Souris Red Rainy
+souris_red_rainy_avg <- mean(souris_red_rainy$kWhkm2day, na.rm = TRUE)
+
+# Region 10: Missouri
+missouri_avg <- mean(missouri$kWhkm2day, na.rm = TRUE)
+
+# Region 11: Arkansas White Red
+arkansas_white_red_avg <- mean(arkansas_white_red$kWhkm2day, na.rm = TRUE)
+
+# Region 12: Texas Gulf
+texas_gulf_avg <- mean(texas_gulf$kWhkm2day, na.rm = TRUE)
+
+# Region 13: Rio Grande
+rio_grande_avg <- mean(rio_grande$kWhkm2day, na.rm = TRUE)
+
+# Region 14: Upper Colorado
+upper_colorado_avg <- mean(upper_colorado$kWhkm2day, na.rm = TRUE)
+
+# Region 15: Lower Colorado
+lower_colorado_avg <- mean(lower_colorado$kWhkm2day, na.rm = TRUE)
+
+# Region 16: Great Basin
+great_basin_avg <- mean(great_basin$kWhkm2day, na.rm = TRUE)
+
+# Region 17: Pacific Northwest
+pacific_northwest_avg <- mean(pacific_northwest$kWhkm2day, na.rm = TRUE)
+
+# Region 18: California
+california_avg <- mean(california$kWhkm2day, na.rm = TRUE)
+
+# Data Frame with kWh/km²/day averages
+wind_energy_means <- data.frame(
+  Region = c("Missouri", "Souris Red Rainy", "Upper Mississippi", "Arkansas White Red", "Rio Grande", "Texas Gulf",
+             "Great Lakes", "Pacific Northwest", "California", "New England", "Upper Colorado", "Ohio",
+             "Great Basin", "Mid Atlantic", "Lower Colorado", "Tennessee", "South Atlantic Gulf", "Lower Mississippi"),
+  Average_kWh_per_km2_day = c(missouri_avg, souris_red_rainy_avg, upper_mississippi_avg, arkansas_white_red_avg, 
+                              rio_grande_avg, texas_gulf_avg, great_lakes_avg, pacific_northwest_avg, california_avg,
+                              new_england_avg, upper_colorado_avg, ohio_avg, great_basin_avg, mid_atlantic_avg,
+                              lower_colorado_avg, tennessee_avg, south_atlantic_gulf_avg, lower_mississippi_avg))
+
+# List of 18 unique colors
+unique_colors <- c(
+  "#FF6347", "#4682B4", "#32CD32", "#FFD700", "#8A2BE2", "#DC143C", "#00CED1", "#FF1493", 
+  "#8B4513", "#C71585", "#20B2AA", "#D2691E", "#FF4500", "#2E8B57", "#A52A2A", "#B22222", 
+  "#5F9EA0", "#FF8C00"
+)
+
+# Bar Chart Visualization of wind_energy_means
+ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day), 
+                              y = Average_kWh_per_km2_day, fill = Region)) +
+  geom_bar(stat = "identity") + 
+  labs(title = "Average Wind Energy Potential by Region (kWh/km²/day)", 
+       x = "Region", 
+       y = "Average kWh per km² per day") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = unique_colors) + 
+  guides(fill = "none") +   
+  scale_y_continuous(labels = scales::comma_format())
+
+# Print wind_energy_means
+print(wind_energy_means)
