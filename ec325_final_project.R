@@ -176,3 +176,176 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 
 # Print wind_energy_means
 print(wind_energy_means)
+
+# Question 2: Can patterns of wind energy potential be associated with geographic or climatic features?
+
+# Average Precipitation (September 2021)
+avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
+
+# Split Average Precipitation Data into 18 Regions based on HUC_12 ranges
+# Region 1 (New England) [HUC_12 range: 010100020101 to 011000060405]
+new_england_precip <- avg_precip %>%
+  filter(HUC_12 >= 010100020101 & HUC_12 <= 011000060405) %>%
+  drop_na()
+
+# Region 2 (Mid Atlantic) [HUC_12 range: 020200010101 to 020802080304]
+mid_atlantic_precip <- avg_precip %>%
+  filter(HUC_12 >= 020200010101 & HUC_12 <= 020802080304)
+
+# Region 3 (South Atlantic Gulf) [HUC_12 range: 030101010101 to 031800050606]
+south_atlantic_gulf_precip <- avg_precip %>%
+  filter(HUC_12 >= 030101010101 & HUC_12 <= 031800050606)
+
+# Region 4 (Great Lakes) [HUC_12 range: 040101010101 to 041505000602]
+great_lakes_precip <- avg_precip %>%
+  filter(HUC_12 >= 040101010101 & HUC_12 <= 041505000602)
+
+# Region 5 (Ohio) [HUC_12 range: 050100010101 to 051402060704]
+ohio_precip <- avg_precip %>%
+  filter(HUC_12 >= 050100010101 & HUC_12 <= 051402060704)
+
+# Region 6 (Tennessee) [HUC_12 range: 060101010101 to 060400060505]
+tennessee_precip <- avg_precip %>%
+  filter(HUC_12 >= 060101010101 & HUC_12 <= 060400060505)
+
+# Region 7 (Upper Mississippi) [HUC_12 range: 070101010101 to 071402040910]
+upper_mississippi_precip <- avg_precip %>%
+  filter(HUC_12 >= 070101010101 & HUC_12 <= 071402040910)
+
+# Region 8 (Lower Mississippi) [HUC_12 range: 080101000101 to 080903020900]
+lower_mississippi_precip <- avg_precip %>%
+  filter(HUC_12 >= 080101000101 & HUC_12 <= 080903020900)
+
+# Region 9 (Souris Red Rainy) [HUC_12 range: 090100020101 to 090400020203]
+souris_red_rainy_precip <- avg_precip %>%
+  filter(HUC_12 >= 090100020101 & HUC_12 <= 090400020203)
+
+# Region 10 (Missouri) [HUC_12 range: 100200010101 to 103002000804]
+missouri_precip <- avg_precip %>%
+  filter(HUC_12 >= 100200010101 & HUC_12 <= 103002000804)
+
+# Region 11 (Arkansas White Red) [HUC_12 range: 110100010101 to 111403070209]
+arkansas_white_red_precip <- avg_precip %>%
+  filter(HUC_12 >= 110100010101 & HUC_12 <= 111403070209)
+
+# Region 12 (Texas Gulf) [HUC_12 range: 120100010101 to 121102081000]
+texas_gulf_precip <- avg_precip %>%
+  filter(HUC_12 >= 120100010101 & HUC_12 <= 121102081000)
+
+# Region 13 (Rio Grande) [HUC_12 range: 130100010101 to 130900020000]
+rio_grande_precip <- avg_precip %>%
+  filter(HUC_12 >= 130100010101 & HUC_12 <= 130900020000)
+
+# Region 14 (Upper Colorado) [HUC_12 range: 140100010101 to 140802050807]
+upper_colorado_precip <- avg_precip %>%
+  filter(HUC_12 >= 140100010101 & HUC_12 <= 140802050807)
+
+# Region 15 (Lower Colorado) [HUC_12 range: 150100010101 to 150803030104]
+lower_colorado_precip <- avg_precip %>%
+  filter(HUC_12 >= 150100010101 & HUC_12 <= 150803030104)
+
+# Region 16 (Great Basin) [HUC_12 range: 160101010101 to 160600151803]
+great_basin_precip <- avg_precip %>%
+  filter(HUC_12 >= 160101010101 & HUC_12 <= 160600151803)
+
+# Region 17 (Pacific Northwest) [HUC_12 range: 170101010201 to 171200090804]
+pacific_northwest_precip <- avg_precip %>%
+  filter(HUC_12 >= 170101010201 & HUC_12 <= 171200090804)
+
+# Region 18 (California) [HUC_12 range: 180101010101 to 181002041400]
+california_precip <- avg_precip %>%
+  filter(HUC_12 >= 180101010101 & HUC_12 <= 181002041400)
+
+# Calculate average precipitation for each of the 18 regions
+# Region 1: New England
+new_england_precip$MeanPrecip <- as.numeric(new_england_precip$MeanPrecip)
+new_england_avg_precip <- mean(new_england_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 2: Mid Atlantic
+mid_atlantic_precip$MeanPrecip <- as.numeric(mid_atlantic_precip$MeanPrecip)
+mid_atlantic_avg_precip <- mean(mid_atlantic_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 3: South Atlantic Gulf
+south_atlantic_gulf_precip$MeanPrecip <- as.numeric(south_atlantic_gulf_precip$MeanPrecip)
+south_atlantic_gulf_avg_precip <- mean(south_atlantic_gulf_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 4: Great Lakes
+great_lakes_precip$MeanPrecip <- as.numeric(great_lakes_precip$MeanPrecip)
+great_lakes_avg_precip <- mean(great_lakes_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 5: Ohio
+ohio_precip$MeanPrecip <- as.numeric(ohio_precip$MeanPrecip)
+ohio_avg_precip <- mean(ohio_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 6: Tennessee
+tennessee_precip$MeanPrecip <- as.numeric(tennessee_precip$MeanPrecip)
+tennessee_avg_precip <- mean(tennessee_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 7: Upper Mississippi
+upper_mississippi_precip$MeanPrecip <- as.numeric(upper_mississippi_precip$MeanPrecip)
+upper_mississippi_avg_precip <- mean(upper_mississippi_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 8: Lower Mississippi
+lower_mississippi_precip$MeanPrecip <- as.numeric(lower_mississippi_precip$MeanPrecip)
+lower_mississippi_avg_precip <- mean(lower_mississippi_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 9: Souris Red Rainy
+souris_red_rainy_precip$MeanPrecip <- as.numeric(souris_red_rainy_precip$MeanPrecip)
+souris_red_rainy_avg_precip <- mean(souris_red_rainy_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 10: Missouri
+missouri_precip$MeanPrecip <- as.numeric(missouri_precip$MeanPrecip)
+missouri_avg_precip <- mean(missouri_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 11: Arkansas White Red
+arkansas_white_red_precip$MeanPrecip <- as.numeric(arkansas_white_red_precip$MeanPrecip)
+arkansas_white_red_avg_precip <- mean(arkansas_white_red_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 12: Texas Gulf
+texas_gulf_precip$MeanPrecip <- as.numeric(texas_gulf_precip$MeanPrecip)
+texas_gulf_avg_precip <- mean(texas_gulf_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 13: Rio Grande
+rio_grande_precip$MeanPrecip <- as.numeric(rio_grande_precip$MeanPrecip)
+rio_grande_avg_precip <- mean(rio_grande_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 14: Upper Colorado
+upper_colorado_precip$MeanPrecip <- as.numeric(upper_colorado_precip$MeanPrecip)
+upper_colorado_avg_precip <- mean(upper_colorado_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 15: Lower Colorado
+lower_colorado_precip$MeanPrecip <- as.numeric(lower_colorado_precip$MeanPrecip)
+lower_colorado_avg_precip <- mean(lower_colorado_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 16: Great Basin
+great_basin_precip$MeanPrecip <- as.numeric(great_basin_precip$MeanPrecip)
+great_basin_avg_precip <- mean(great_basin_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 17: Pacific Northwest
+pacific_northwest_precip$MeanPrecip <- as.numeric(pacific_northwest_precip$MeanPrecip)
+pacific_northwest_avg_precip <- mean(pacific_northwest_precip$MeanPrecip, na.rm = TRUE)
+
+# Region 18: California
+california_precip$MeanPrecip <- as.numeric(california_precip$MeanPrecip)
+california_avg_precip <- mean(california_precip$MeanPrecip, na.rm = TRUE)
+
+# Data frame with regions and their average precipitation
+precipitation_means <- data.frame(
+  Region = c("New England", "Mid Atlantic", "South Atlantic Gulf", "Great Lakes", "Ohio", "Tennessee", 
+             "Upper Mississippi", "Lower Mississippi", "Souris Red Rainy", "Missouri", 
+             "Arkansas White Red", "Texas Gulf", "Rio Grande", "Upper Colorado", "Lower Colorado", 
+             "Great Basin", "Pacific Northwest", "California"),
+  Average_Precip_mm = c(new_england_avg_precip, mid_atlantic_avg_precip, south_atlantic_gulf_avg_precip, 
+                        great_lakes_avg_precip, ohio_avg_precip, tennessee_avg_precip, 
+                        upper_mississippi_avg_precip, lower_mississippi_avg_precip, 
+                        souris_red_rainy_avg_precip, missouri_avg_precip, arkansas_white_red_avg_precip, 
+                        texas_gulf_avg_precip, rio_grande_avg_precip, upper_colorado_avg_precip, 
+                        lower_colorado_avg_precip, great_basin_avg_precip, pacific_northwest_avg_precip, 
+                        california_avg_precip))
+
+# Merge precipitation_means with wind energy_means based on Region
+wind_climate_data <- merge(wind_energy_means, precipitation_means, by = "Region")
+
+# Calculate correlations
+correlation <- cor(wind_climate_data$Average_kWh_per_km2_day, wind_climate_data$Average_Precip_mm, use = "complete.obs")
+print(paste("Correlation between wind energy and precipitation:", correlation))
