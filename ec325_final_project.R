@@ -6,9 +6,10 @@
 # EC325 Final Project
 
 # Install and Load Packages
-# install.packages(c("ggplot2", "scales"))
+# install.packages(c("ggplot2", "scales", "dplyr"))
 library(ggplot2)
 library(scales)
+library(dplyr)
 
 # Wind Energy Data (September 2021)
 sep2021 <- read.csv("/cloud/project/Sep2021_Wind_Energy.csv")
@@ -86,7 +87,7 @@ pacific_northwest <- sep2021 %>%
 california <- sep2021 %>%
   filter(HUC_12 >= 180101010101 & HUC_12 <= 181002041400)
 
-# Question 1: What regions within the contiguous United States exhibit the highest potential wind energy resources based on kilowatt hours per square kilometer per day?
+# Question 1: What regions within the contiguous United States exhibit the highest average potential wind energy based on kilowatt hours per square kilometer per day?
 
 # Calculate kWh/km²/day averages for each of the 18 regions
 # Region 1: New England
