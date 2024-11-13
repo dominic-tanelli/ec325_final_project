@@ -177,26 +177,25 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: Can patterns of wind energy potential be associated with geographic or climatic features?
+# Question 2: Can patterns of average wind energy be associated with geographic or climatic features?
 
 # Feature 1 - Average Precipitation (September 2021)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 
 # Merge wind energy and average precipitation data based on HUC_12 code
-wind_precip_data <- merge(wind_energy$kWhkm2day, avg_precip)
+wind_precip_data <- merge(wind_energy, avg_precip, by = "HUC_12")
 
 # Change MeanPrecip strings into numeric values
-avg_precip$MeanPrecip <- as.numeric(avg_precip$MeanPrecip)
+wind_precip_data$MeanPrecip <- as.numeric(wind_precip_data$MeanPrecip)
 
-# Calculates correlation between wind energy and precipitation
-correlation <- cor(wind_energy$kWhkm2day, avg_precip$MeanPrecip, use = "complete.obs")
-print(paste("Correlation between wind energy and precipitation:", correlation))
+# Calculates correlation between average wind energy and average precipitation
+wind_precip_correlation <- cor(wind_precip_data$AvgWindEnergy, wind_precip_data$MeanPrecip, use = "complete.obs")
 
-# Visualizes relationship between wind energy and average precipitation
-ggplot(wind_climate_data, aes(x = Avg_Precip, y = Average_kWh_per_km2_day)) +
-  geom_point() +
-  geom_smooth(method = "lm", col = "blue") +
-  labs(title = "Wind Energy Potential vs. Precipitation by Region",
-       x = "Average Precipitation (mm)",
-       y = "Wind Energy Potential (kWh/km²/day)") +
-  theme_minimal()
+# Scatter plot of Average Wind Energy vs. Average Precipitation
+ggplot(wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) + 
+  geom_point(color = "blue", alpha = 0.6) + 
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(title = "Average Wind Energy vs. Average Precipitation",
+    subtitle = paste("Correlation between wind energy and precipitation:", 
+                     wind_precip_correlation), x = "Average Precipitation (mm)", 
+    y = "Average Wind Energy Potential (mWh)") + theme_minimal()
