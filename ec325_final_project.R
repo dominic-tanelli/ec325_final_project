@@ -14,6 +14,8 @@ library(dplyr)
 # Wind Energy Data (September 2021)
 wind_energy <- read.csv("/cloud/project/Sep2021_Wind_Energy.csv")
 
+# Question 1: What regions within the contiguous United States exhibit the highest average potential wind energy based on kilowatt hours per square kilometer per day?
+
 # Split Wind Energy Data into 18 Regions based on HUC_12 ranges
 # Region 1 (New England) [HUC_12 range: 010100020101 to 011000060405]
 new_england <- wind_energy %>%
@@ -86,8 +88,6 @@ pacific_northwest <- wind_energy %>%
 # Region 18 (California) [HUC_12 range: 180101010101 to 181002041400]
 california <- wind_energy %>%
   filter(HUC_12 >= 180101010101 & HUC_12 <= 181002041400)
-
-# Question 1: What regions within the contiguous United States exhibit the highest average potential wind energy based on kilowatt hours per square kilometer per day?
 
 # Calculate kWh/km²/day averages for each of the 18 regions
 # Region 1: New England
