@@ -177,9 +177,9 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: Can patterns of average wind energy be associated with geographic or climatic features?
+# Question 2: How does average precipitation influence patterns of average wind energy across the U.S. and by state?
 
-# Feature 1 - Average Precipitation (September 2021)
+# Average Precipitation (September 2021)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 
 # Merge wind energy and average precipitation data based on HUC_12 code
@@ -197,5 +197,5 @@ ggplot(wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) +
   geom_smooth(method = "lm", color = "red", se = FALSE) +
   labs(title = "Average Wind Energy vs. Average Precipitation",
     subtitle = paste("Correlation between wind energy and precipitation:", 
-                     wind_precip_correlation), x = "Average Precipitation (mm)", 
-    y = "Average Wind Energy Potential (mWh)") + theme_minimal()
+                     wind_precip_correlation), x = "Average Precipitation (in)", 
+    y = "Average Wind Energy (mWh)") + theme_minimal()
