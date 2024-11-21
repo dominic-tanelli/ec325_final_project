@@ -179,23 +179,26 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: Does average precipitation correlate with patterns of average wind energy in the United States? What about the 18 regions?
+# Question 2: Does average precipitation correlate with patterns of average wind energy in the United States?
 
-# United States
 # Average Precipitation (September 2021)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 
-# Merge wind energy and average precipitation data based on HUC_12 code
-united_states_wind_precip_data <- merge(wind_energy, avg_precip, by = "HUC_12")
-
 # Change MeanPrecip strings into numeric values
-united_states_wind_precip_data$MeanPrecip <- as.numeric(united_states_wind_precip_data$MeanPrecip)
+avg_precip$MeanPrecip <- as.numeric(avg_precip$MeanPrecip)
+
+# Merge wind energy and average precipitation data based on HUC_12 code
+wind_precip_data <- merge(wind_energy, avg_precip, by = "HUC_12")
+
+# Removes rows with missing AvgWindEnergy or MeanPrecip values
+wind_precip_data <- wind_precip_data %>%
+  filter(!is.na(AvgWindEnergy) & !is.na(MeanPrecip))
 
 # Calculates correlation between average wind energy and average precipitation in the United States
-united_states_wind_precip_correlation <- cor(united_states_wind_precip_data$AvgWindEnergy, wind_precip_data$MeanPrecip, use = "complete.obs")
+wind_precip_correlation <- cor(wind_precip_data$AvgWindEnergy, wind_precip_data$MeanPrecip, use = "complete.obs")
 
 # Scatter plot of Average Wind Energy vs. Average Precipitation
-ggplot(united_states_wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) + 
+ggplot(wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) + 
   geom_point(color = "blue", alpha = 0.6) + 
   geom_smooth(method = "lm", color = "red", se = FALSE) +
   labs(title = "Average Wind Energy vs. Average Precipitation (United States)", 
@@ -203,6 +206,12 @@ ggplot(united_states_wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) +
   theme_minimal()
 
 # Prints correlation between average wind energy and average precipitation in the United States
-paste("Correlation between wind energy and precipitation (United States:", united_states_wind_precip_correlation)
+paste("Correlation between wind energy and precipitation (United States):", wind_precip_correlation)
 
-# 18 Regions
+# Question 3: What HUC_12 regions have the highest correlation between average wind energy and average precipitation?
+
+# Calculate correlations by HUC_12
+correlations_by_HUC12 <- wind_precip_data %>%
+  group_by(HUC_12) %>%
+  summarise(correlation = cor(MeanPrecip, AvgWindEnergy, use = "complete.obs", method = "pearson")) %>%
+  ungroup()
