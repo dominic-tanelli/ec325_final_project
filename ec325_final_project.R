@@ -6,10 +6,12 @@
 # EC325 Final Project
 
 # Install and Load Packages
-# install.packages(c("ggplot2", "scales", "dplyr"))
+# install.packages(c("ggplot2", "scales", "dplyr", "ggcorrplot", "broom"))
 library(ggplot2)
 library(scales)
 library(dplyr)
+library(ggcorrplot)
+library(broom)
 
 # Wind Energy Data (September 2021)
 wind_energy <- read.csv("/cloud/project/Sep2021_Wind_Energy.csv")
@@ -179,39 +181,50 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: Does average precipitation correlate with patterns of average wind energy in the United States?
-
-# Average Precipitation (September 2021)
+# Question 2: How do climatic, geographic, and socio-environmental factors, including average precipitation and recreational activities such as hunting and birdwatching, influence patterns of average wind energy across HUC_12 regions in the United States?
+# Load September 2021 datasets (Average Precipitation, Big Game Hunting, Bird Hunting, and Bird Watching)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
+big_game_hunting <- read.csv("/cloud/project/BigGameHunting_RecreationDemand.csv")
+bird_hunting <- read.csv("/cloud/project/MigratoryBirdHunting_RecreationDemand.csv")
+bird_watching <- read.csv("/cloud/project/BirdWatching_RecreationDemand.csv")
 
 # Change MeanPrecip strings into numeric values
 avg_precip$MeanPrecip <- as.numeric(avg_precip$MeanPrecip)
 
-# Merge wind energy and average precipitation data based on HUC_12 code
-wind_precip_data <- merge(wind_energy, avg_precip, by = "HUC_12")
+# Merges hunting datasets
+hunting <- merge(big_game_hunting, bird_hunting, by = "HUC_12")
 
-# Removes rows with missing AvgWindEnergy or MeanPrecip values
-wind_precip_data <- wind_precip_data %>%
-  filter(!is.na(AvgWindEnergy) & !is.na(MeanPrecip))
+# Merges all data by HUC_12
+combined_data <- wind_energy %>%
+  merge(avg_precip, by = "HUC_12") %>%
+  merge(hunting, by = "HUC_12") %>%
+  merge(bird_watching, by = "HUC_12")
 
-# Calculates correlation between average wind energy and average precipitation in the United States
-wind_precip_correlation <- cor(wind_precip_data$AvgWindEnergy, wind_precip_data$MeanPrecip, use = "complete.obs")
+# Remove rows with missing data in key columns
+combined_data <- combined_data %>%
+  filter(!is.na(AvgWindEnergy) & !is.na(MeanPrecip) & !is.na(BG_Demand) 
+         & !is.na(MB_Demand) & !is.na(BW_Demand))
 
-# Scatter plot of Average Wind Energy vs. Average Precipitation
-ggplot(wind_precip_data, aes(x = MeanPrecip, y = AvgWindEnergy)) + 
-  geom_point(color = "blue", alpha = 0.6) + 
-  geom_smooth(method = "lm", color = "red", se = FALSE) +
-  labs(title = "Average Wind Energy vs. Average Precipitation (United States)", 
-       x = "Average Precipitation (in)", y = "Average Wind Energy (mWh)") + 
-  theme_minimal()
+# Calculate correlation matrix for AvgWindEnergy, MeanPrecip, Hunting (BG_Demand, MB_Demand), and Bird Watching (BW_Demand)
+cor_matrix <- cor(combined_data[, c("AvgWindEnergy", "MeanPrecip", "BG_Demand", "MB_Demand", "BW_Demand")], use = "complete.obs")
 
-# Prints correlation between average wind energy and average precipitation in the United States
-paste("Correlation between wind energy and precipitation (United States):", wind_precip_correlation)
+# Heatmap of the correlation matrix
+ggcorrplot(cor_matrix, method = "circle", lab = TRUE, 
+           title = "Correlation Matrix for Predictors")
 
-# Question 3: What HUC_12 regions have the highest correlation between average wind energy and average precipitation?
+# Fit and get summary of a multiple regression model
+model <- lm(AvgWindEnergy ~ MeanPrecip + BG_Demand + MB_Demand + BW_Demand, data = combined_data)
+summary(model)
 
-# Calculate correlations by HUC_12
-correlations_by_HUC12 <- wind_precip_data %>%
-  group_by(HUC_12) %>%
-  summarise(correlation = cor(MeanPrecip, AvgWindEnergy, use = "complete.obs", method = "pearson")) %>%
-  ungroup()
+# Coefficient Plot for the multiple regression model
+coeffs <- summary(model)$coefficients
+ci <- confint(model)
+coef_data <- data.frame(Predictor = rownames(coeffs), Estimate = coeffs[, "Estimate"],
+  CI_Lower = ci[, 1], CI_Upper = ci[, 2])
+coef_data <- coef_data[-1, ] # Excludes intercept for clarity
+ggplot(coef_data, aes(x = Estimate, y = Predictor)) + 
+  geom_point(color = "blue", size = 3) +
+  geom_errorbarh(aes(xmin = CI_Lower, xmax = CI_Upper), height = 0.2, color = "blue") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Coefficient Plot for AvgWindEnergy Model", x = "Coefficient Estimate",
+    y = "Predictor") + theme_minimal()
