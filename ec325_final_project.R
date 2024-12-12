@@ -6,12 +6,12 @@
 # EC325 Final Project
 
 # Install and Load Packages
-# install.packages(c("ggplot2", "scales", "dplyr", "ggcorrplot", "broom"))
+# install.packages(c("ggplot2", "scales", "dplyr", "ggcorrplot", "effects"))
 library(ggplot2)
 library(scales)
 library(dplyr)
 library(ggcorrplot)
-library(broom)
+library(effects)
 
 # Wind Energy Data (September 2021)
 wind_energy <- read.csv("/cloud/project/Sep2021_Wind_Energy.csv")
@@ -181,7 +181,7 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: How do climatic, geographic, and socio-environmental factors, including average precipitation and recreational activities such as hunting and birdwatching, influence patterns of average wind energy across HUC_12 regions in the United States?
+# Question 2: How does average precipitation, big game hunting, bird hunting, and bird watching influence patterns of average wind energy across HUC_12 regions in the United States?
 # Load September 2021 datasets (Average Precipitation, Big Game Hunting, Bird Hunting, and Bird Watching)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 big_game_hunting <- read.csv("/cloud/project/BigGameHunting_RecreationDemand.csv")
@@ -191,13 +191,10 @@ bird_watching <- read.csv("/cloud/project/BirdWatching_RecreationDemand.csv")
 # Change MeanPrecip strings into numeric values
 avg_precip$MeanPrecip <- as.numeric(avg_precip$MeanPrecip)
 
-# Merges hunting datasets
-hunting <- merge(big_game_hunting, bird_hunting, by = "HUC_12")
-
 # Merges all data by HUC_12
-combined_data <- wind_energy %>%
-  merge(avg_precip, by = "HUC_12") %>%
-  merge(hunting, by = "HUC_12") %>%
+combined_data <- merge(wind_energy, avg_precip, by = "HUC_12") %>%
+  merge(big_game_hunting, by = "HUC_12") %>%
+  merge(bird_hunting, by = "HUC_12") %>%
   merge(bird_watching, by = "HUC_12")
 
 # Remove rows with missing data in key columns
@@ -220,11 +217,30 @@ summary(model)
 coeffs <- summary(model)$coefficients
 ci <- confint(model)
 coef_data <- data.frame(Predictor = rownames(coeffs), Estimate = coeffs[, "Estimate"],
-  CI_Lower = ci[, 1], CI_Upper = ci[, 2])
-coef_data <- coef_data[-1, ] # Excludes intercept for clarity
+                        CI_Lower = ci[, 1], CI_Upper = ci[, 2])
+coef_data <- coef_data[-1, ]
 ggplot(coef_data, aes(x = Estimate, y = Predictor)) + 
   geom_point(color = "blue", size = 3) +
   geom_errorbarh(aes(xmin = CI_Lower, xmax = CI_Upper), height = 0.2, color = "blue") +
   geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
   labs(title = "Coefficient Plot for AvgWindEnergy Model", x = "Coefficient Estimate",
-    y = "Predictor") + theme_minimal()
+       y = "Predictor") + theme_minimal()
+
+# Residuals vs Fitted for the multiple regression model
+ggplot(data = data.frame(Fitted = fitted(model), Residuals = residuals(model)),
+       aes(x = Fitted, y = Residuals)) +
+  geom_point(alpha = 0.4, color = "darkgray") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs. Fitted Plot", x = "Fitted Values", y = "Residuals") +
+  theme_minimal()
+
+effect_plots <- allEffects(model)
+plot(effect_plots)
+
+# Actual vs Predicted for the multiple regression model
+ggplot(data = data.frame(Actual = combined_data$AvgWindEnergy, 
+                         Predicted = predict(model)), aes(x = Predicted, y = Actual)) +
+  geom_point(alpha = 0.4, color = "blue") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Actual vs Predicted Values", x = "Predicted", y = "Actual") +
+  theme_minimal()
