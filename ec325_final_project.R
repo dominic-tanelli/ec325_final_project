@@ -234,8 +234,11 @@ ggplot(data = data.frame(Fitted = fitted(model), Residuals = residuals(model)),
   labs(title = "Residuals vs. Fitted Plot", x = "Fitted Values", y = "Residuals") +
   theme_minimal()
 
-effect_plots <- allEffects(model)
-plot(effect_plots)
+# Individual effects on wind energy
+for (i in 1:4) {
+  plot(allEffects(model)[i])
+  print(allEffects(model)[i])
+}
 
 # Actual vs Predicted for the multiple regression model
 ggplot(data = data.frame(Actual = combined_data$AvgWindEnergy, 
