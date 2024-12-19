@@ -3,7 +3,7 @@
 # ENVST 325
 # 19 December 2024
 
-# EC325 Final Project
+# EC325 Final Project - Regional Wind Energy and Its Environmental Interactions
 
 # Install and Load Packages
 # install.packages(c("ggplot2", "scales", "dplyr", "ggcorrplot", "effects"))
@@ -182,7 +182,7 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 print(wind_energy_means)
 
 # Question 2: How does average precipitation, big game hunting, bird hunting, and bird watching influence patterns of average wind energy across HUC_12 regions in the United States?
-# Load September 2021 datasets (Average Precipitation, Big Game Hunting, Bird Hunting, and Bird Watching)
+# Average Precipitation, Big Game Hunting, Bird Hunting, and Bird Watching Data (September 2021)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 big_game_hunting <- read.csv("/cloud/project/BigGameHunting_RecreationDemand.csv")
 bird_hunting <- read.csv("/cloud/project/MigratoryBirdHunting_RecreationDemand.csv")
