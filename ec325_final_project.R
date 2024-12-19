@@ -181,7 +181,7 @@ ggplot(wind_energy_means, aes(x = reorder(Region, -Average_kWh_per_km2_day),
 # Print wind_energy_means
 print(wind_energy_means)
 
-# Question 2: How does average precipitation, big game hunting, bird hunting, and bird watching influence patterns of average wind energy across HUC_12 regions in the United States?
+# Question 2: How does average precipitation, big game hunting, bird hunting, and bird watching influence patterns of average wind energy in the contiguous United States?
 # Average Precipitation, Big Game Hunting, Bird Hunting, and Bird Watching Data (September 2021)
 avg_precip <- read.csv("/cloud/project/AvgPrecip_NHDPv2_WBD.csv")
 big_game_hunting <- read.csv("/cloud/project/BigGameHunting_RecreationDemand.csv")
