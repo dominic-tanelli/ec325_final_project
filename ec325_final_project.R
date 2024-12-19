@@ -212,38 +212,3 @@ ggcorrplot(cor_matrix, method = "circle", lab = TRUE,
 # Fit and get summary of a multiple regression model
 model <- lm(AvgWindEnergy ~ MeanPrecip + BG_Demand + MB_Demand + BW_Demand, data = combined_data)
 summary(model)
-
-# Coefficient Plot for the multiple regression model
-coeffs <- summary(model)$coefficients
-ci <- confint(model)
-coef_data <- data.frame(Predictor = rownames(coeffs), Estimate = coeffs[, "Estimate"],
-                        CI_Lower = ci[, 1], CI_Upper = ci[, 2])
-coef_data <- coef_data[-1, ]
-ggplot(coef_data, aes(x = Estimate, y = Predictor)) + 
-  geom_point(color = "blue", size = 3) +
-  geom_errorbarh(aes(xmin = CI_Lower, xmax = CI_Upper), height = 0.2, color = "blue") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Coefficient Plot for AvgWindEnergy Model", x = "Coefficient Estimate",
-       y = "Predictor") + theme_minimal()
-
-# Residuals vs Fitted for the multiple regression model
-ggplot(data = data.frame(Fitted = fitted(model), Residuals = residuals(model)),
-       aes(x = Fitted, y = Residuals)) +
-  geom_point(alpha = 0.4, color = "darkgray") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Residuals vs. Fitted Plot", x = "Fitted Values", y = "Residuals") +
-  theme_minimal()
-
-# Individual effects on wind energy
-for (i in 1:4) {
-  plot(allEffects(model)[i])
-  print(allEffects(model)[i])
-}
-
-# Actual vs Predicted for the multiple regression model
-ggplot(data = data.frame(Actual = combined_data$AvgWindEnergy, 
-                         Predicted = predict(model)), aes(x = Predicted, y = Actual)) +
-  geom_point(alpha = 0.4, color = "blue") +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Actual vs Predicted Values", x = "Predicted", y = "Actual") +
-  theme_minimal()
